@@ -6,6 +6,7 @@ from datetime import date
 def on_button_click():
     global issue_var
     global due_var
+    global priority_var
     global even
     global today
     task = taskEntry.get()
@@ -26,7 +27,8 @@ def on_button_click():
         descriptionEntry.delete(0, ctk.END)
         issue_var.set(today)
         due_var.set(today)
-        # PriorityEntry.delete(0, ctk.END)
+        priority_var.set(priorities[1])
+        
 
 def remove_selected():
     selected_item = tree.selection()
@@ -84,7 +86,9 @@ Due_DateEntry.grid(row=1, column=4, padx=5, pady=5)
 
 PriorityLabel = ctk.CTkLabel(input_frame, text="Priority")
 PriorityLabel.grid(row=0, column=5, padx=5)
-PrioritySelect = ctk.CTkOptionMenu(input_frame, values=priorities)
+priority_var = ctk.StringVar()
+priority_var.set(priorities[1])
+PrioritySelect = ctk.CTkOptionMenu(input_frame, values=priorities, variable=priority_var)
 PrioritySelect.grid(row=1, column=5, padx=5, pady=5)
 
 button_frame = ctk.CTkFrame(root)
