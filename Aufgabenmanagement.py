@@ -35,6 +35,27 @@ def remove_selected():
     for item in selected_item:
         tree.delete(item)
 
+def edit_column(row_id, column_index, new_value):
+    """Edits a specific column in a Treeview row."""
+    current_values = list(tree.item(row_id, 'values'))  # Get current values as a list
+    current_values[column_index] = new_value  # Modify the specific column
+    tree.item(row_id, values=current_values)  # Update the row
+
+def handle_double_click(event):
+    row_id = tree.identify_row(event.y)
+    column_id = tree.identify_column(event.x)
+
+    if row_id and column_id:
+        column_index = int(column_id[1:]) - 1
+        current_values = list(tree.item(row_id, 'values'))
+        current_value = current_values[column_index]
+
+        new_value = tk.simpledialog.askstring("Edit Field", "Enter new value:", initialvalue=current_value)
+
+        current_values[column_index] = new_value
+        tree.item(row_id, values=current_values)
+
+
 even = False
 
 # Create main window
@@ -131,6 +152,8 @@ for i in range(0, len(columns)):
 # tree.heading("Priority", text="Priority")
 
 tree.pack(pady=10, fill=ctk.BOTH, expand=True)
+
+tree.bind("<Double-1>", handle_double_click)
 
 # Run the GUI event loop
 root.mainloop()
