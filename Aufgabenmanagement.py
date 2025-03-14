@@ -3,6 +3,7 @@ from tkinter import ttk
 import tkinter as tk
 from datetime import date
 import os.path
+import csv
 
 def on_button_click():
     global issue_var
@@ -34,23 +35,25 @@ def insert_row(task, description, issueDate, dueDate, priority, even, wr_file):
             tree.tag_configure("odd", background="#343638", foreground="white")
             even = not even
         if wr_file:
-            with open("./tasks.csv", "w") as file:
-                # Writing header to csv file
-                file.write(columns_string + "\n")
+            write_file()
 
-                # Writing all current tree rows to csv
-                for item_id in tree.get_children():
-                    values = tree.item(item_id, 'values')
-                    csv_string = ",".join(str(item) for item in values)
-                    file.write(csv_string + "\n")
+def write_file():
+    with open("./tasks.csv", "w") as file:
+        # Writing header to csv file
+        file.write(columns_string + "\n")
 
-                    # file.write
-
+        # Writing all current tree rows to csv
+        for item_id in tree.get_children():
+            values = tree.item(item_id, 'values')
+            csv_string = ",".join(str(item) for item in values)
+            file.write(csv_string + "\n")
+        file.close()
 
 def remove_selected():
     selected_item = tree.selection()
     for item in selected_item:
         tree.delete(item)
+    write_file()
 
 def edit_column(row_id, column_index, new_value):
     """Edits a specific column in a Treeview row."""
@@ -73,7 +76,11 @@ def handle_double_click(event):
         tree.item(row_id, values=current_values)
 
 even = False
+
+# Defining table columns
 columns = ("Task", "Description", "Issue_Date", "Due_Date", "Priority")
+
+# Initializing string to be written to csv
 columns_string = ""
 for column in columns:
     columns_string = columns_string + column + ","
@@ -81,18 +88,6 @@ columns_string = columns_string[:-1]
 
 # Check if tasks file already exists
 file_path = "./tasks.csv"
-
-if os.path.exists(file_path):
-    print("File exists. Reading entries...")
-else:
-    print(f"The file '{file_path}' does not exist. Creating file...")
-    try:
-        with open("./tasks.csv", "w") as file:
-            file.write(columns_string)
-            file.close()
-        print("File created successfully.")
-    except Exception as e:
-        print(f"An error occured: {e}")
 
 # Create main window
 ctk.set_appearance_mode("dark")  # Options: "light", "dark", "system"
@@ -189,6 +184,26 @@ for i in range(0, len(columns)):
 tree.pack(pady=10, fill=ctk.BOTH, expand=True)
 
 tree.bind("<Double-1>", handle_double_click)
+
+if os.path.exists(file_path):
+    print("File exists. Reading entries...")
+    with open(file_path, 'r', newline='') as file:
+        reader = csv.reader(file)
+        next(reader)
+        for row in reader:
+            print(row)
+            task, description, issueDate, dueDate, priority = row
+            # Inserting row into tree without writing it to file again
+            insert_row(task, description, issueDate, dueDate, priority, even, wr_file=False)                     
+else:
+    print(f"The file '{file_path}' does not exist. Creating file...")
+    try:
+        with open("./tasks.csv", "w") as file:
+            file.write(columns_string)
+            file.close()
+        print("File created successfully.")
+    except Exception as e:
+        print(f"An error occured: {e}")
 
 # Run the GUI event loop
 root.mainloop()
