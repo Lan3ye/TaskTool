@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk
 import tkinter as tk
 from datetime import date
+import os.path
 
 def on_button_click():
     global issue_var
@@ -15,6 +16,15 @@ def on_button_click():
     dueDate = Due_DateEntry.get()
     priority = PrioritySelect.get()
     if task:
+        insert_row(task, description, issueDate, dueDate, priority, even, True)
+        taskEntry.delete(0, ctk.END)
+        descriptionEntry.delete(0, ctk.END)
+        issue_var.set(today)
+        due_var.set(today)
+        priority_var.set(priorities[1])
+
+def insert_row(task, description, issueDate, dueDate, priority, even, wr_file):
+    if task:
         if even:
             tree.insert("", "end", values=(task,description, issueDate, dueDate, priority), tags=("even",))
             tree.tag_configure("even", background="#242424", foreground="white")
@@ -23,12 +33,19 @@ def on_button_click():
             tree.insert("", "end", values=(task,description, issueDate, dueDate, priority), tags=("odd",))
             tree.tag_configure("odd", background="#343638", foreground="white")
             even = not even
-        taskEntry.delete(0, ctk.END)
-        descriptionEntry.delete(0, ctk.END)
-        issue_var.set(today)
-        due_var.set(today)
-        priority_var.set(priorities[1])
-        
+        if wr_file:
+            with open("./tasks.csv", "w") as file:
+                # Writing header to csv file
+                file.write(columns_string + "\n")
+
+                # Writing all current tree rows to csv
+                for item_id in tree.get_children():
+                    values = tree.item(item_id, 'values')
+                    csv_string = ",".join(str(item) for item in values)
+                    file.write(csv_string + "\n")
+
+                    # file.write
+
 
 def remove_selected():
     selected_item = tree.selection()
@@ -55,8 +72,27 @@ def handle_double_click(event):
         current_values[column_index] = new_value
         tree.item(row_id, values=current_values)
 
-
 even = False
+columns = ("Task", "Description", "Issue_Date", "Due_Date", "Priority")
+columns_string = ""
+for column in columns:
+    columns_string = columns_string + column + ","
+columns_string = columns_string[:-1]
+
+# Check if tasks file already exists
+file_path = "./tasks.csv"
+
+if os.path.exists(file_path):
+    print("File exists. Reading entries...")
+else:
+    print(f"The file '{file_path}' does not exist. Creating file...")
+    try:
+        with open("./tasks.csv", "w") as file:
+            file.write(columns_string)
+            file.close()
+        print("File created successfully.")
+    except Exception as e:
+        print(f"An error occured: {e}")
 
 # Create main window
 ctk.set_appearance_mode("dark")  # Options: "light", "dark", "system"
@@ -65,7 +101,6 @@ root = ctk.CTk()
 root.title("Simple GUI")
 root.geometry("1000x500")
 
-columns = ("Task", "Description", "Issue_Date", "Due_Date", "Priority")
 priorities = ["Low", "Standard", "High", "Critical"]
 
 input_frame = ctk.CTkFrame(root)
