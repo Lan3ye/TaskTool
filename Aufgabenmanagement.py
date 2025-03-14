@@ -15,11 +15,11 @@ def on_button_click():
     if task:
         if even:
             tree.insert("", "end", values=(task,description, issueDate, dueDate, priority), tags=("even",))
-            tree.tag_configure("even", background="#f0f0f0")
+            tree.tag_configure("even", background="#242424", foreground="white")
             even = not even
         else:
             tree.insert("", "end", values=(task,description, issueDate, dueDate, priority), tags=("odd",))
-            tree.tag_configure("odd", background="#e0e0e0")
+            tree.tag_configure("odd", background="#343638", foreground="white")
             even = not even
         taskEntry.delete(0, ctk.END)
         descriptionEntry.delete(0, ctk.END)
@@ -100,7 +100,8 @@ table_frame = ctk.CTkFrame(root)
 table_frame.pack(pady=10, fill=ctk.BOTH, expand=True)
 
 style = ttk.Style(table_frame)
-style.configure("Treeview", foreground="white") #sets background and text colors. #343638
+style.theme_use("clam")
+style.configure("Treeview", foreground="black", fieldbackground="#242424") #sets text colors #343638
 style.configure("Treeview.Heading", background="#2b2b2b", foreground="white") #sets heading background and text colors.
 
 tree = ttk.Treeview(table_frame, columns=columns, show="headings")
