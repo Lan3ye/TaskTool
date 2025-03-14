@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
+import tkinter as tk
 from datetime import date
 
 def on_button_click():
@@ -110,6 +111,14 @@ table_frame.configure(fg_color="#343638")
 
 for column in columns:
     tree.heading(column, text=column)
+
+# Preventing all but the description column from stretching
+for i in range(0, len(columns)):
+    if i != 1:
+        tree.column(columns[i], stretch=tk.NO)
+    else:
+        tree.column(columns[i], stretch=tk.YES)
+
 
 # tree.heading("Task", text="Task")
 # tree.heading("Description", text="Description")
