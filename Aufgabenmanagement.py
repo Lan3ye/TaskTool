@@ -76,6 +76,7 @@ def handle_double_click(event):
         tree.item(row_id, values=current_values)
 
 even = False
+# ctk.set_widget_scaling(1.4)
 
 # Defining table columns
 columns = ("Task", "Description", "Issue_Date", "Due_Date", "Priority")
@@ -157,8 +158,8 @@ table_frame.pack(pady=10, fill=ctk.BOTH, expand=True)
 
 style = ttk.Style(table_frame)
 style.theme_use("clam")
-style.configure("Treeview", foreground="black", fieldbackground="#242424") #sets text colors #343638
-style.configure("Treeview.Heading", background="#2b2b2b", foreground="white") #sets heading background and text colors.
+style.configure("Treeview", foreground="black", fieldbackground="#242424", font=tk.font.Font(size=16)) #sets text colors #343638
+style.configure("Treeview.Heading", background="#2b2b2b", foreground="white", font=tk.font.Font(size=16)) #sets heading background and text colors.
 
 tree = ttk.Treeview(table_frame, columns=columns, show="headings")
 
@@ -185,6 +186,7 @@ tree.pack(pady=10, fill=ctk.BOTH, expand=True)
 
 tree.bind("<Double-1>", handle_double_click)
 
+# Reading from csv file
 if os.path.exists(file_path):
     print("File exists. Reading entries...")
     with open(file_path, 'r', newline='') as file:
